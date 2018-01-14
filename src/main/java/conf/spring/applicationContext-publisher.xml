@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       		http://www.springframework.org/schema/aop
+       		http://www.springframework.org/schema/aop/spring-aop-2.5.xsd 
+		    http://www.springframework.org/schema/tx  
+    	    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+ 	
+ 	<!-- 索引 -->
+ 	<bean id="agentService" class="com.kkgame.adx.publisher.service.impl.AgentServiceImpl">
+ 		<property name="agentDao" ref="agentDao"></property>
+ 	</bean>
+ 	<bean id="agentDao" class="com.kkgame.adx.publisher.dao.impl.AgentDaoImpl">
+ 		<property name="sqlMapClient" ref="sqlMapClient_kkpay_sdkmaster"></property>
+ 		<property name="dataSource" ref="dataSource_kkpay_sdkmaster"></property>
+ 	</bean>
+ 	
+ 	<!-- 索引 -->
+    <bean id="publisherService" class="com.kkgame.adx.publisher.service.impl.PublisherServiceImpl">
+        <property name="publisherDao" ref="publisherDao"></property>
+    </bean>
+    <bean id="publisherDao" class="com.kkgame.adx.publisher.dao.impl.PublisherDaoImpl">
+        <property name="sqlMapClient" ref="sqlMapClient_kkpay_sdkmaster"></property>
+        <property name="dataSource" ref="dataSource_kkpay_sdkmaster"></property>
+    </bean>
+    
+    <!-- 索引 -->
+    <bean id="appService" class="com.kkgame.adx.publisher.service.impl.AppServiceImpl">
+        <property name="appDao" ref="appDao"></property>
+    </bean>
+    <bean id="appDao" class="com.kkgame.adx.publisher.dao.impl.AppDaoImpl">
+        <property name="sqlMapClient" ref="sqlMapClient_kkpay_sdkmaster"></property>
+        <property name="dataSource" ref="dataSource_kkpay_sdkmaster"></property>
+    </bean>
+    
+    <!-- 索引 -->
+    <bean id="adPositionService" class="com.kkgame.adx.publisher.service.impl.ADPositionServiceImpl">
+        <property name="adPositionDao" ref="adPositionDao"></property>
+    </bean>
+    <bean id="adPositionDao" class="com.kkgame.adx.publisher.dao.impl.ADPositionDaoImpl">
+        <property name="sqlMapClient" ref="sqlMapClient_kkpay_sdkmaster"></property>
+        <property name="dataSource" ref="dataSource_kkpay_sdkmaster"></property>
+    </bean>
+    
+</beans>

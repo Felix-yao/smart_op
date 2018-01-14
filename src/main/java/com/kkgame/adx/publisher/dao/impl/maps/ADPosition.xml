@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="adPositionSqlMap">
+    
+    <insert id="createADPosition" parameterClass="adPositionVO">
+        INSERT INTO APP_AD( Name,   AppId,      AdType,     Width,      Height,   
+	                        IAB1,   IAB2,       BidPrice,   Token
+	                        )
+                    VALUES( #name#, #appId#,    #adType#,   #width#,    #height#,
+                            #iab1#, #iab2#,     #bidPrice#, #token#
+                        )
+    </insert>
+	
+	<update id="updateADPosition" parameterClass="adPositionVO">
+	        UPDATE APP_AD
+	        SET    Name = #name#, `AppId`= #appId#,    `AdType`= #adType#,     Width = #width#, Height = #height#,
+	               IAB1 = #iab1#,  IAB2= #iab2#,       `BidPrice`= #bidPrice#
+	        WHERE id=#id#
+	</update>
+	
+	<select id="getADPositionList" parameterClass="adPositionVO" resultClass="adPositionVO">
+	   SELECT   A.Id,  A.Name, AP.Name appName, 
+	            CASE A.AdType WHEN '1' THEN 'Android' WHEN '2' THEN 'Website' END adTypeName,
+                IA.IAB1Name iab1, IA.IAB2Name iab2, A.BidPrice, A.Status
+	    FROM APP_AD  A
+	    LEFT JOIN APP AP ON AP.ID = A.AppId
+	    LEFT JOIN PUBLISHER P ON P.ID = AP.PublisherId
+        LEFT JOIN EMPLOYEE E ON E.ID = P.amId
+        LEFT JOIN PROXY PR ON PR.ID = E.ProxyId
+        LEFT JOIN IAB IA ON (IA.IAB1 = A.IAB1 AND  IA.IAB2 = A.IAB2)
+        <dynamic prepend="WHERE">
+            <isGreaterThan prepend="AND" property="id" compareValue="0">
+                A.Id = #id#
+            </isGreaterThan>
+            <isNotEmpty    prepend="AND" property="name">
+                A.Name LIKE '%$name$%'       
+            </isNotEmpty>
+            <isGreaterThan prepend="AND" property="amId" compareValue="0">
+                P.amId = #amId#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="publisherId" compareValue="0">
+                AP.publisherId = #publisherId#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="agentId" compareValue="0">
+                PR.ID = #agentId#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="status" compareValue="-1">
+                A.Status = #status#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="appId" compareValue="0">
+                A.AppId = #appId#
+            </isGreaterThan>
+        </dynamic>
+	    ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+	</select>
+	
+	<!-- dataBle查总数 -->
+	<select id="getADPositionListCount" parameterClass="adPositionVO" resultClass="int">
+	    SELECT COUNT(D.Id) count
+	    FROM(
+	        SELECT   A.Id
+	        FROM APP_AD  A
+	        LEFT JOIN APP AP ON AP.ID = A.AppId
+	        LEFT JOIN PUBLISHER P ON P.ID = AP.PublisherId
+	        LEFT JOIN EMPLOYEE E ON E.ID = P.amId
+	        LEFT JOIN PROXY PR ON PR.ID = E.ProxyId
+	        <dynamic prepend="WHERE">
+	            <isGreaterThan prepend="AND" property="id" compareValue="0">
+	                A.Id = #id#
+	            </isGreaterThan>
+	            <isNotEmpty    prepend="AND" property="name">
+	                A.Name LIKE '%$name$%'       
+	            </isNotEmpty>
+	            <isGreaterThan prepend="AND" property="amId" compareValue="0">
+	                P.amId = #amId#
+	            </isGreaterThan>
+	            <isGreaterThan prepend="AND" property="publisherId" compareValue="0">
+	                AP.publisherId = #publisherId#
+	            </isGreaterThan>
+	            <isGreaterThan prepend="AND" property="agentId" compareValue="0">
+	                PR.ID = #agentId#
+	            </isGreaterThan>
+	            <isGreaterThan prepend="AND" property="status" compareValue="-1">
+		            A.Status = #status#
+		        </isGreaterThan>
+		        <isGreaterThan prepend="AND" property="appId" compareValue="0">
+		            A.AppId = #appId#
+		        </isGreaterThan>
+	         </dynamic>
+	    )D
+	</select>
+	
+	<select id="getADPosition" parameterClass="adPositionVO" resultClass="adPositionVO">
+        SELECT  A.Id,  A.Name, A.BidPrice, AP.Name appName, A.AppId appId, A.AdType,
+                A.Width, A.Height, A.IAB1, A.IAB2, A.Token
+        FROM    APP_AD A
+        LEFT    JOIN APP AP ON AP.ID = A.AppId
+        WHERE   A.ID=$id$
+    </select>
+    
+    <update id="updateADPositionStatus" parameterClass="adPositionVO">
+        UPDATE APP_AD
+        SET Status = #status#
+        WHERE ID = #id#
+    </update>
+    
+</sqlMap>

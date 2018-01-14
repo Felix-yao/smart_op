@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="publisherSqlMap">
+	 
+    <!-- 插入publisher表 -->
+     <insert id="createPublisher" parameterClass="publisherVO">
+        INSERT INTO PUBLISHER(Name,CountryId,Phone,Company,amId,Street,City,State,Zip,Skype,QQ,PostBack,PricePercent,`Desc`)
+        VALUES(#name#,#countryId#,#phone#,#company#,#amId#,#street#,#city#,#state#,#zip#,#skype#,#qq#,#postBack#,#pricePercent#,#desc#)
+        <selectKey keyProperty="id" resultClass="int">
+            SELECT LAST_INSERT_ID() AS ID FROM LOGIN_USER LIMIT 1
+        </selectKey>
+     </insert>
+     
+     <!-- 插入login_user表 -->
+     <insert id="createloginUser" parameterClass="publisherVO" >
+        INSERT INTO LOGIN_USER(Email,Password,RoleId,CreateTime,RoleType)
+        VALUES(#email#,#password#,#id#,now(),'PB')
+     </insert>
+     
+     <!-- 修改 publisher表 -->
+    <update id="updatePublisher" parameterClass="publisherVO" >
+        UPDATE PUBLISHER 
+        SET     
+             <isNotEmpty prepend="" property="name">
+                     Name=#name#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="countryId">    
+                     CountryId=#countryId#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="phone">    
+                     Phone=#phone#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="company">    
+                     Company=#company#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="street">    
+                     Street=#street#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="city">    
+                     City=#city#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="state">    
+                     State=#state#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="zip">    
+                     Zip=#zip#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="skype">
+                     Skype=#skype#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="qq">    
+                     QQ=#qq#     
+             </isNotEmpty>
+             <isNotNull prepend="," property="desc">    
+                     `Desc`=#desc#     
+             </isNotNull>
+             <isNotEmpty prepend="," property="postBack">    
+                     `PostBack`=#postBack#     
+             </isNotEmpty>
+             <isNotEmpty prepend="," property="pricePercent">    
+                     `PricePercent`=#pricePercent#     
+             </isNotEmpty>
+        WHERE ID=#id#
+    </update>
+    
+    <update id="updateLoginUser" parameterClass="publisherVO">
+        UPDATE  LOGIN_USER
+        SET     Password = #password#
+        WHERE   RoleId = #id# AND RoleType='PB'   
+    </update>
+    
+    <select id="getPublisherVOList" parameterClass="publisherVO" resultClass="publisherVO">
+        SELECT P.ID, P.`Name`, L.Email, P.Company, IFNULL(E.`Name`,'NO AM')  amName, L.status,
+               DATE_FORMAT(L.CreateTime,'%Y-%m-%d') createTime
+        FROM PUBLISHER       AS P 
+        LEFT JOIN EMPLOYEE   AS E ON E.ID = P.amId
+        LEFT JOIN LOGIN_USER AS L ON (P.ID=L.RoleId AND L.RoleType='PB')
+        <dynamic prepend="WHERE">
+            <isGreaterThan prepend="AND" property="id" compareValue="0">
+                P.Id = #id#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="amId" compareValue="0">
+                P.AmId = #amId#
+            </isGreaterThan>
+            <isNotEmpty prepend="AND" property="email">
+                L.Email like '%$email$%'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="name">
+                P.name like '%$name$%'
+            </isNotEmpty>
+            <isGreaterThan prepend="AND" property="status" compareValue="-1">
+                L.`Status`= #status#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="agentId" compareValue="0">
+                E.proxyId = #agentId#
+            </isGreaterThan>
+        </dynamic>
+        ORDER BY #pageVO.orderIndex# $pageVO.orderType$
+        LIMIT #pageVO.startIndex#,#pageVO.pageSize#     
+    </select>
+    <select id="getPublisherVOListCount" parameterClass="publisherVO" resultClass="int">
+        SELECT COUNT(P.ID)
+        FROM PUBLISHER AS P 
+        LEFT JOIN EMPLOYEE AS E ON E.ID=P.amId
+        LEFT JOIN LOGIN_USER AS L ON (P.ID=L.RoleId AND L.RoleType='PB')
+        <dynamic prepend="WHERE">
+            <isGreaterThan prepend="AND" property="id" compareValue="0">
+                P.Id = #id#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="amId" compareValue="0">
+                P.AmId = #amId#
+            </isGreaterThan>
+            <isNotEmpty prepend="AND" property="email">
+                L.Email like '%$email$%'
+            </isNotEmpty>
+            <isNotEmpty prepend="AND" property="name">
+                P.name like '%$name$%'
+            </isNotEmpty>
+            <isGreaterThan prepend="AND" property="status" compareValue="-1">
+                L.`Status`= #status#
+            </isGreaterThan>
+            <isGreaterThan prepend="AND" property="agentId" compareValue="0">
+                E.proxyId = #agentId# 
+            </isGreaterThan>
+        </dynamic>
+    </select>
+    
+    <update id="updatePublisherStatus">
+        UPDATE LOGIN_USER
+        SET `Status` = #status#
+        WHERE  RoleId = #id# AND RoleType = 'PB'
+    </update>
+    
+    <!-- 根据id查询publisher -->
+    <select id="getPublisherVO" parameterClass="publisherVO" resultClass="publisherVO">
+        SELECT a.ID,a.`Name`,a.Phone,a.Company,a.Street,a.City,a.State,a.CountryId,
+                a.Zip,a.Skype,a.QQ,a.`Desc`,c.`Name` as Country,l.Email,l.CreateTime,
+                l.Password,l.RoleId,s.`name` AS `Statu`,l.`Status`,a.TodayRevenue,a.MonthRevenue,
+                a.postBack,a.amId,a.TodaySendRevenue,a.MonthSendRevenue,a.PricePercent,a.`Token`
+        FROM PUBLISHER AS a,LOGIN_USER AS l,COUNTRY as c,`STATUS` AS s
+        WHERE  a.ID=$id$ AND a.ID=l.RoleId AND a.CountryId=c.ID and l.RoleType='PB'
+                and s.s_id=l.`Status`
+    </select>
+    
+    
+    
+     
+</sqlMap>

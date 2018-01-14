@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/cache
+		http://www.springframework.org/schema/cache/spring-cache.xsd
+  ">
+  
+  	<!-- 启用缓存注解功能，这个是必须的，否则注解不会生效，另外，该注解一定要声明在spring主配置文件中才会生效 -->
+    <cache:annotation-driven cache-manager="ehcacheManager"/>
+    
+    <!-- cacheManager工厂类，指定ehcache.xml的位置 -->
+    <bean id="ehcacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+         <property name="configLocation" value="classpath:ehcache.xml" />
+    </bean>
+    <!-- 声明cacheManager -->
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+         <property name="cacheManager" ref="ehcacheManagerFactory" />
+    </bean>
+    
+    <bean id="loginUser" class="com.kkgame.adx.login.bean.LoginUser"></bean>
+  
+    <!--  让spring扫描 com.kkgame.sspop.util包下的类将CountryUtil.java类注册为bean-->
+    <context:component-scan base-package="com.kkgame.adx.util"/>
+    
+    <import resource="applicationContext-common.xml"/>
+    <import resource="applicationContext-login.xml"/>
+    <import resource="applicationContext-publisher.xml"/>
+    <import resource="applicationContext-system.xml"/>
+    <import resource="applicationContext-silver.xml"/>
+    <import resource="applicationContext-order.xml"/>
+    
+</beans>

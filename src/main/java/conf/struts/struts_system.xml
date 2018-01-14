@@ -1,0 +1,31 @@
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.multipart.maxSize" value="1000000000" />
+	<include file="struts-default.xml"></include>
+	<package name="system" namespace="/system" extends="abroad-default">
+		<default-interceptor-ref name="crudStack"/>
+		
+		<action name="getAllAm" method="getAllAm" class="com.kkgame.adx.tag.action.SystemAction">
+            <result name="success">/pages/select/getAllAmSelect.jsp</result>
+        </action>
+        
+        <action name="getAllCountry" method="getAllCountry" class="com.kkgame.adx.tag.action.SystemAction">
+            <result name="success">/pages/select/getAllCountrySelect.jsp</result>
+        </action>
+        
+        <action name="getAllIAB1" method="getAllIAB1" class="com.kkgame.adx.tag.action.SystemAction">
+            <result name="success">/pages/select/getAllIAB1Select.jsp</result>
+        </action>
+        
+        <action name="getAllIAB2" method="getAllIAB2" class="com.kkgame.adx.tag.action.SystemAction">
+            <result name="success">/pages/select/getIAB2Select.jsp</result>
+        </action>
+        
+        <action name="system" class="com.kkgame.adx.tag.action.SystemAction">
+        </action>
+        
+		
+	</package>
+</struts>

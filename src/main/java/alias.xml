@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="alias">
+    <typeAlias alias="loginUser" type="com.kkgame.adx.login.bean.LoginUser"/>
+    <typeAlias alias="dspVO" type="com.kkgame.adx.dsp.bean.DspVO"/>
+    <typeAlias alias="employee" type="com.kkgame.adx.tag.bean.Employee"/>
+    <typeAlias alias="countryVO" type="com.kkgame.adx.tag.bean.CountryVO"/>
+    <typeAlias alias="carrierVO" type="com.kkgame.adx.tag.bean.CarrierVO"/>
+    <typeAlias alias="nameVO" type="com.kkgame.adx.tag.bean.NameVO"/>
+    <typeAlias alias="country_CarrierVO" type="com.kkgame.adx.tag.bean.Country_CarrierVO"/>
+    <typeAlias alias="select2VO" type="com.kkgame.adx.tag.bean.Select2VO"/>
+    
+    <typeAlias alias="agentVO" type="com.kkgame.adx.publisher.bean.AgentVO"/>
+    <typeAlias alias="pageVO" type="com.kkgame.adx.base.bean.PageVO"/>
+    <typeAlias alias="adverVO" type="com.kkgame.adx.adver.bean.AdverVO"/>
+    <typeAlias alias="loginUser"    type="com.kkgame.adx.login.bean.LoginUser"/>
+    
+    <typeAlias alias="pageVO"       type="com.kkgame.adx.base.bean.PageVO"/>
+    
+    <typeAlias alias="agentVO"      type="com.kkgame.adx.publisher.bean.AgentVO"/>
+    <typeAlias alias="publisherVO"  type="com.kkgame.adx.publisher.bean.PublisherVO"/>
+    <typeAlias alias="appVO"        type="com.kkgame.adx.publisher.bean.AppVO"/>
+    <typeAlias alias="adPositionVO" type="com.kkgame.adx.publisher.bean.ADPositionVO"/>
+    
+    <typeAlias alias="nameVO"       type="com.kkgame.adx.tag.bean.NameVO"/>
+    <typeAlias alias="countryVO"    type="com.kkgame.adx.tag.bean.CountryVO"/>
+    <typeAlias alias="select2VO"    type="com.kkgame.adx.tag.bean.Select2VO"/>
+    
+    <typeAlias alias="silverDataVO" type="com.kkgame.adx.data.bean.SilverDataVO"/>
+    
+    <typeAlias alias="silverVO" type="com.kkgame.adx.order.bean.SilverVO"/>
+    
+    
+<!-- test -->
+</sqlMap>

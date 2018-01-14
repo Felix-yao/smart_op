@@ -1,0 +1,22 @@
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.multipart.maxSize" value="1000000000" />
+	<include file="struts-default.xml"></include>
+	
+	<package name="order" namespace="/order" extends="abroad-default">
+		<default-interceptor-ref name="crudStack"/>
+		
+		<!-- <action name="silverPage" class="com.kkgame.adx.order.action.SilverAtcion" method="silverPage">
+			<result name="silverPage">/pages/order/silver/silverList.jsp</result>
+		</action> -->
+		
+		<action name="silver*" class="com.kkgame.adx.order.action.SilverAtcion" method="{1}">
+			<result name="listPage">/pages/order/silver/silverList.jsp</result>
+			<result name="logisticsNumberInfoPage">/pages/order/silver/logisticsNumberInfoPage.jsp</result>
+			<result name="editLogisticsNumberPage">/pages/order/silver/logisticsNumberEdit.jsp</result>
+		</action>
+		
+	</package>
+</struts>

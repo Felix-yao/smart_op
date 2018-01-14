@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[3.7.3.201602250914-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
+	<configs>
+		<config>src/main/java/conf/spring/applicationContext-dsp.xml</config>
+	</configs>
+	<autoconfigs>
+		<config>src/main/java/conf/spring/applicationContext-base.xml</config>
+		<config>src/main/java/conf/spring/applicationContext.xml</config>
+		<config>src/main/java/conf/spring/applicationContext-common.xml</config>
+		<config>src/main/java/conf/spring/applicationContext-login.xml</config>
+		<config>src/main/java/conf/spring/applicationContext-publisher.xml</config>
+	</autoconfigs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

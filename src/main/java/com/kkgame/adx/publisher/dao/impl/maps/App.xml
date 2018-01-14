@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="appSqlMap">
+    
+    <insert id="createApp" parameterClass="appVO">
+        INSERT INTO APP(Name,               `Platform`,     `Url`,          PackageName,    IAB1,   
+                        IAB2,               PricePercent,   PublisherId,    CreateTime,     Mode,
+                        ShowPercent,        ClickPercent,   DspOpType,      Dsps,           Status,
+                        StoreUrl,           
+                        AdType,             Position,       TimeStep,       ShowTimes,      SendPercent,
+                        OpenType,           Ads,            BalancePercent, Positions,      SalePercent,
+                        Levels,             Type            
+                        )
+                 VALUES(#name#,             #platform#,     #url#,          #packageName#,  #iab1#,
+                        #iab2#,             #pricePercent#, #publisherId#,  NOW(),          5,
+                        #showPercent#,      #clickPercent#, #dspOpType#,    #dsps#,         1,
+                        #storeUrl#,         
+                        ',101,102,103,',    3,              20,             12,             100,
+                        1,                  '2,3,4,5,6',    80,             ',1,2,3,4,',    100,
+                        ',1,2,3,4,5,',      1
+                        )
+        <selectKey resultClass="int"  keyProperty="id" >
+             SELECT last_insert_id() as id ;   
+        </selectKey>
+    </insert>
+	
+	<update id="updateApp" parameterClass="appVO">
+	        UPDATE APP
+	        SET    Name = #name#, `Platform`= #platform#, `Url`= #url#, PackageName = #packageName#, 
+	               PublisherId = #publisherId#, StoreUrl=#storeUrl#,
+	               IAB1 = #iab1#,  IAB2= #iab2#,  `PricePercent`= #pricePercent#, ShowPercent = #showPercent#,
+	               ClickPercent = #clickPercent#,  DspOpType= #dspOpType#,  `Dsps`= #dsps#
+	        WHERE id=#id#
+	</update>
+	
+	<select id="getAppVOList" parameterClass="appVO" resultClass="appVO">
+	   SELECT   A.Id,  A.Name, CASE A.Platform WHEN '1' THEN 'Android' WHEN '2' THEN 'Website' END platformName,
+                IA.IAB1Name iab1, IA.IAB2Name iab2, A.Status, A.CreateTime, A.PricePercent, A.Type, A.Url, A.PackageName,
+	            A.ShowPercent, A.ClickPercent, A.DspOpType, A.Dsps
+	    FROM APP  A
+	    LEFT JOIN PUBLISHER P ON P.ID = A.PublisherId
+        LEFT JOIN EMPLOYEE E ON E.ID=P.amId
+        LEFT JOIN PROXY PR ON PR.ID = E.ProxyId
+        LEFT JOIN IAB IA ON (IA.IAB1 = A.IAB1 AND  IA.IAB2 = A.IAB2)
+	    <dynamic prepend="WHERE">
+	           Mode = 5
+		    <isGreaterThan property="id" compareValue="0">
+                   AND A.Id = #id#
+            </isGreaterThan>
+            <isNotEmpty property="name">
+                   AND A.Name LIKE '%$name$%'       
+            </isNotEmpty>
+            <isGreaterThan property="status" compareValue="0">
+                   AND A.Status = #status#
+            </isGreaterThan>
+            <isGreaterThan property="amId" compareValue="0">
+                AND P.amId = #amId#
+            </isGreaterThan>
+            <isGreaterThan property="publisherId" compareValue="0">
+                AND A.publisherId = #publisherId#
+            </isGreaterThan>
+            <isGreaterThan property="agentId" compareValue="0">
+                AND PR.ID = #agentId#
+            </isGreaterThan>
+         </dynamic>
+	    ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+	</select>
+	
+	<!-- dataBle查总数 -->
+	<select id="getAppListCount" parameterClass="appVO" resultClass="int">
+	    SELECT COUNT(D.Id) count
+	    FROM(
+	        SELECT   A.Id
+	        FROM APP  A
+	        LEFT JOIN PUBLISHER P ON P.ID = A.PublisherId
+	        LEFT JOIN EMPLOYEE E ON E.ID=P.amId
+	        LEFT JOIN PROXY PR ON PR.ID = E.ProxyId
+	        <dynamic prepend="WHERE">
+	               Mode = 5
+	            <isGreaterThan property="id" compareValue="0">
+	                   AND A.Id = #id#
+	            </isGreaterThan>
+	            <isNotEmpty property="name">
+	                   AND A.Name LIKE '%$name$%'       
+	            </isNotEmpty>
+	            <isGreaterThan property="status" compareValue="0">
+	                   AND A.Status = #status#
+	            </isGreaterThan>
+	            <isGreaterThan property="amId" compareValue="0">
+	                AND P.amId = #amId#
+	            </isGreaterThan>
+	            <isGreaterThan property="publisherId" compareValue="0">
+	                AND A.publisherId = #publisherId#
+	            </isGreaterThan>
+	            <isGreaterThan property="agentId" compareValue="0">
+	                AND PR.ID = #agentId#
+	            </isGreaterThan>
+	        </dynamic>
+	    )D
+	</select>
+	
+	<select id="getAppVO" parameterClass="appVO" resultClass="appVO">
+        SELECT  A.Id, A.Name, A.Platform, A.Url, A.PackageName, A.IAB1 iab1, A.IAB2 iab2, A.PricePercent,
+                A.ShowPercent, A.ClickPercent, A.DspOpType, A.Dsps, A.Status, A.CreateTime,
+                P.Name publisherName, A.PublisherId, A.StoreUrl
+        FROM    APP A
+        LEFT    JOIN PUBLISHER P ON P.ID = A.PublisherId
+        WHERE   A.ID=$id$
+    </select>
+    
+    <update id="updateAppStatus" parameterClass="appVO">
+        UPDATE APP
+        SET Status = #status#
+        WHERE ID = #id#
+    </update>
+    
+</sqlMap>

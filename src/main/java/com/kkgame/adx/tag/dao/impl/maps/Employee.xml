@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="employeeSqlMap">
+	<select id="selectAll" resultClass="employee">
+	    SELECT EM.ID id,
+	    	   EM.Name name,
+	    	   LU.Email email
+	    FROM EMPLOYEE EM
+	    LEFT JOIN LOGIN_USER LU ON LU.RoleId = EM.ID  
+	    WHERE 1=1 
+	    <isNotNull property="roleType">
+	    	AND LU.RoleType = #roleType#
+	    </isNotNull>
+	</select>
+	
+	<select id="selectAllAMBDOP" parameterClass="employee" resultClass="employee">
+		SELECT 
+			EM.ID id,
+			EM.Name name,
+			EM.Phone phone,
+			EM.Skype skype,
+			EM.QQ qq,
+			LU.Email email,
+			CASE LU.Status
+			WHEN '0' THEN 'Pending'
+	        WHEN '1' THEN 'Approve'
+	        WHEN '2' THEN 'Deny'
+	        WHEN '3' THEN 'Block'
+	        END statu,
+	        CASE LU.RoleType 
+	        WHEN 'AMA' THEN 'BD'
+	        WHEN 'AMP' THEN 'AM'
+	        WHEN 'AM' THEN 'OP'
+	        END roleType,
+	        LU.Status status 
+		FROM EMPLOYEE EM
+		LEFT JOIN LOGIN_USER LU ON LU.RoleId = EM.ID
+		WHERE (LU.RoleType='AM' OR LU.RoleType='AMP' OR LU.RoleType='AMA')
+		<isGreaterThan property="id" compareValue="0">
+			AND EM.ID = #id#
+		</isGreaterThan>
+		<isNotEmpty property="name">
+			AND EM.Name LIKE concat('%',#name#,'%')
+		</isNotEmpty>
+		<isGreaterThan property="status" compareValue="-1">
+			AND LU.Status = #status#
+		</isGreaterThan>
+		<isNotEmpty property="email">
+			AND LU.Email LIKE concat('%',#email#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="roleType">
+			AND LU.RoleType=#roleType#
+		</isNotEmpty>
+		ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+	</select>
+	<select id="selectAllAMBDOPCount" parameterClass="employee" resultClass="int">
+		SELECT COUNT(EM.ID)
+		FROM EMPLOYEE EM
+		LEFT JOIN LOGIN_USER LU ON LU.RoleId = EM.ID
+		WHERE (LU.RoleType='AM' OR LU.RoleType='AMP' OR LU.RoleType='AMA')
+		<isGreaterThan property="id" compareValue="0">
+			AND EM.ID = #id#
+		</isGreaterThan>
+		<isNotEmpty property="name">
+			AND EM.Name LIKE concat('%',#name#,'%')
+		</isNotEmpty>
+		<isGreaterThan property="status" compareValue="-1">
+			AND LU.Status = #status#
+		</isGreaterThan>
+		<isNotEmpty property="email">
+			AND LU.Email LIKE concat('%',#email#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="roleType">
+			AND LU.RoleType=#roleType#
+		</isNotEmpty>
+	</select>
+	<select id="selectEmployeeById" parameterClass="employee" resultClass="employee" >
+		SELECT 
+			EM.ID id,
+			EM.Name name,
+			EM.Phone phone,
+			EM.Skype skype,
+			EM.QQ qq,
+			LU.Email email,
+			CASE LU.Status
+			WHEN '0' THEN 'Pending'
+	        WHEN '1' THEN 'Approve'
+	        WHEN '2' THEN 'Deny'
+	        WHEN '3' THEN 'Block'
+	        END statu,
+	        LU.RoleType roleType,
+	        LU.Status status,
+	        EM.JobTitle jobTitle,
+	        LU.Password password,
+	        EM.ProxyId proxyId
+		FROM EMPLOYEE EM
+		LEFT JOIN LOGIN_USER LU ON LU.RoleId = EM.ID
+		WHERE (LU.RoleType='AM' OR LU.RoleType='AMP' OR LU.RoleType='AMA')
+		AND LU.RoleType = #roleType# AND LU.RoleId=#id#
+	</select>
+	<insert id="insertEmployee">
+		INSERT INTO EMPLOYEE(Name,Phone,Skype,QQ,JobTitle,ProxyId)
+		VALUES(#name#,#phone#,#skype#,#qq#,#jobTitle#,#proxyId#)
+		<selectKey resultClass="int"  keyProperty="id" >    
+             SELECT last_insert_id() as id ;   
+        </selectKey>  
+	</insert>
+	<insert id="insertEmployeeUser">
+		INSERT INTO LOGIN_USER 
+			( Email ,Password,RoleId,RoleType,Status,CreateTime)
+ 		VALUES (#email#,#password#,#id#,#roleType#,0,now())
+	</insert>
+	<update id="updateEmployeeStatus" parameterClass="employee">
+	       UPDATE LOGIN_USER
+	        SET Status = #status#
+	        WHERE RoleId = #id# AND RoleType=#roleType#
+	</update>
+	<update id="updateEmployee" parameterClass="employee" >
+			UPDATE EMPLOYEE 
+			SET	    
+				 <isNotEmpty prepend="" property="name">
+       				 Name=#name#     
+    			 </isNotEmpty>
+    			 <isNotEmpty prepend="," property="phone">    
+       				 Phone=#phone#     
+    			 </isNotEmpty>
+    			 <isNotEmpty prepend="," property="skype">    
+       				 Skype=#skype#     
+    			 </isNotEmpty>
+    			 <isNotEmpty prepend="," property="qq">    
+       				 QQ=#qq#     
+    			 </isNotEmpty>
+    			 <isNotNull prepend="," property="jobTitle">    
+       				 `JobTitle`=#jobTitle#     
+    			 </isNotNull>
+  			     <isGreaterThan prepend="," property="proxyId" compareValue="0">    
+       				 `proxyId`=#proxyId#     
+    			 </isGreaterThan>
+			WHERE ID=#id#
+		</update>
+		<update id="updateEmployeeUser" parameterClass="employee" >
+			UPDATE LOGIN_USER 
+       				SET Password=#password#     
+			WHERE RoleId = #id# and RoleType=#roleType#  
+		</update>
+</sqlMap>

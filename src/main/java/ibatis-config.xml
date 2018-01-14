@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings cacheModelsEnabled="false" enhancementEnabled="false"
+		lazyLoadingEnabled="true" useStatementNamespaces="true" />
+	<sqlMap resource="alias.xml" />
+	<sqlMap resource="com/kkgame/adx/tag/dao/impl/maps/Employee.xml"/>
+	<sqlMap resource="com/kkgame/adx/tag/dao/impl/maps/System.xml"/>
+	<!-- 账户模块 -->
+	<sqlMap resource="com/kkgame/adx/login/dao/impl/maps/Login.xml"/>
+	<!-- dsp -->
+	<sqlMap resource="com/kkgame/adx/dsp/dao/impl/maps/Dsp.xml"/>
+<!-- 	adver -->
+	<sqlMap resource="com/kkgame/adx/adver/dao/impl/maps/Adver.xml"/>
+<!-- 	publisher -->
+	<sqlMap resource="com/kkgame/adx/publisher/dao/impl/maps/Agent.xml"/>
+	<sqlMap resource="com/kkgame/adx/publisher/dao/impl/maps/Publisher.xml"/>
+	<sqlMap resource="com/kkgame/adx/publisher/dao/impl/maps/App.xml"/>
+	<sqlMap resource="com/kkgame/adx/publisher/dao/impl/maps/ADPosition.xml"/>
+	<sqlMap resource="com/kkgame/adx/data/dao/impl/maps/SilverData.xml"/>
+	<sqlMap resource="com/kkgame/adx/order/dao/impl/maps/Silver.xml"/>
+</sqlMapConfig>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="systemSqlMap">
+    
+<!-- new -->
+    <select id="getAllAmList" parameterClass="nameVO" resultClass="nameVO">
+        SELECT  E.id id,
+            E.name name
+        FROM LOGIN_USER L
+        LEFT JOIN EMPLOYEE E ON E.Id = L.RoleId
+        <isEqual property="type" compareValue="3">
+            LEFT JOIN PROXY P ON P.Id = E.ProxyId
+        </isEqual>
+        WHERE 1=1 AND L.Status = 1
+        <isEqual property="type" compareValue="1">
+            AND L.RoleType='AMP' AND E.ID IS NOT NULL
+        </isEqual>
+        <isEqual property="type" compareValue="2">
+            AND L.RoleType='AMA' AND E.ID IS NOT NULL           
+        </isEqual>
+        <isEqual property="type" compareValue="3">
+            AND L.RoleType='AMP'  
+            <isNotNull property="amId">
+                <isGreaterThan property="amId" compareValue="0">
+                    AND P.Id=#amId#
+                </isGreaterThan>
+            </isNotNull>
+        </isEqual>
+    </select>
+    
+    <select id="getCountryList" resultClass="countryVO">
+        SELECT ID   id,
+               Name name
+        FROM COUNTRY 
+    </select>
+    
+    <select id="getDspSelect2" parameterClass="nameVO" resultClass="select2VO">
+        SELECT ID id,CONCAT('(',Id,')',Name) text
+        FROM DSP_INFO
+        WHERE 1 = 1
+        <isNotNull property="name">
+               AND CONCAT('(',Id,')',Name) like '%$name$%'
+        </isNotNull>
+    </select>
+    
+    <select id="getPublisherSelect2" parameterClass="nameVO" resultClass="select2VO">
+        SELECT P.ID ID,
+               CONCAT('(',P.Id,')',P.Name) text
+        FROM PUBLISHER P
+        LEFT JOIN EMPLOYEE E ON E.Id= P.AmId
+        LEFT JOIN LOGIN_USER L ON (L.RoleId = P.Id AND L.RoleType = 'PB' AND L.Status = 1)
+        WHERE 1 = 1
+        <isNotNull property="name">
+            AND CONCAT('(',P.Id,')',P.Name) like '%$name$%'
+        </isNotNull>
+        <isNotEmpty property="amId">
+            <isGreaterThan property="amId" compareValue="0">
+                AND P.AmId = #amId#
+            </isGreaterThan>
+        </isNotEmpty>
+        <isNotEmpty property="isProxy">
+            <isGreaterThan property="isProxy" compareValue="0">
+                AND E.ProxyId = #proxyId#
+            </isGreaterThan>
+        </isNotEmpty>
+    </select>
+    
+    <select id="getAllIAB1List" parameterClass="nameVO" resultClass="nameVO">
+        SELECT  IAB1 name1, IAB1Name name
+        FROM  IAB
+        GROUP BY IAB1
+        ORDER BY IAB1Name
+    </select>
+    
+    <select id="getIAB2List" parameterClass="nameVO" resultClass="nameVO">
+        SELECT  IAB2 name1, IAB2Name name
+        FROM  IAB
+        WHERE IAB1 = #name#
+        ORDER BY IAB2Name
+    </select>
+    
+    <select id="getAppSelect2" resultClass="select2VO" parameterClass="nameVO">
+        SELECT  A.id id,
+             CONCAT('(',A.id,')',A.name) text
+        FROM APP A
+        LEFT JOIN PUBLISHER P ON P.ID = A.PublisherId
+        LEFT JOIN kok_ssp.EMPLOYEE E ON E.ID = P.AmId
+        WHERE 1=1 AND Mode = 5
+        <isNotNull property="publisherId">
+            <isGreaterThan property="publisherId" compareValue="0">
+                AND A.publisherId = #publisherId#
+            </isGreaterThan>
+        </isNotNull>
+        <isNotNull property="amId">
+            <isGreaterThan property="amId" compareValue="0">
+                AND P.AmId = #amId#
+            </isGreaterThan>
+        </isNotNull>
+        <isNotNull property="proxyId">
+            <isGreaterThan property="proxyId" compareValue="0">
+                AND E.proxyId = #proxyId#
+            </isGreaterThan>
+        </isNotNull>
+        <isNotNull property="name">
+            AND CONCAT('(',A.id,')',A.name) like '%$name$%'
+        </isNotNull>
+        ORDER BY A.id
+    </select>
+    
+    <select id="getCountrySelect2" resultClass="select2VO" parameterClass="nameVO">
+        SELECT  C.Id id,
+             CONCAT('(',C.Id,')',C.name) text
+        FROM COUNTRY C
+        WHERE 1=1
+        <isNotNull property="name">
+            AND CONCAT('(',C.id,')',C.name) like '%$name$%'
+        </isNotNull>
+        ORDER BY C.id
+    </select>
+    
+    <select id="getADPositionSelect2" resultClass="select2VO" parameterClass="nameVO">
+        SELECT  A.Id id,
+             CONCAT('(',A.Id,')',A.name) text
+        FROM APP_AD A
+        WHERE 1=1 
+        <isNotNull property="name">
+            AND CONCAT('(',A.id,')',A.name) like '%$name$%'
+        </isNotNull>
+        ORDER BY A.id
+    </select>
+    
+</sqlMap>

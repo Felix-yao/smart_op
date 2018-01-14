@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="silverDataSqlMap">
+
+    <select id="getAllData" parameterClass="silverDataVO" resultClass="silverDataVO">
+        SELECT Id,	Name,	Status,	DATE(createTime) createTime
+		FROM smart_watch_info
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="startDate">
+				DATE(CreateTime) BETWEEN #startDate# AND #endDate#
+			</isNotEmpty>
+			<isGreaterThan prepend="AND" property="publisherId" compareValue="0">
+				PublisherId = #publisherId#
+			</isGreaterThan>
+		</dynamic>
+		ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+    </select>
+    
+    <select id="getAllDataCount" parameterClass="silverDataVO" resultClass="int">
+        SELECT COUNT(Id) counts
+		FROM smart_watch_info
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="startDate">
+				DATE(CreateTime) BETWEEN #startDate# AND #endDate#
+			</isNotEmpty>
+		</dynamic>
+    </select>
+    
+</sqlMap>

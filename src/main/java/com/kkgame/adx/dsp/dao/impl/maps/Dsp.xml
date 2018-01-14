@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dspSqlMap">
+	<select id="selectAll" resultClass="dspVO">
+	    SELECT DI.ID id,
+	    	   EM.Name employeeName,
+	    	   DI.Name name,
+	    	   DI.Company company,
+	    	   CASE DI.PriceMethod 
+	    	   WHEN '1' THEN 'CPC'
+	           WHEN '2' THEN 'CPM'
+	           END  priceMethodName,
+	    	   DI.Status status,
+	    	   DI.CountryIds countryIds,
+	    	   DI.AdType adType,
+	    	   DI.CreateTime createTime,
+	    	   LU.Status userStatus,
+	    	   DI.EmployeeId employeeId
+	    FROM DSP_INFO DI
+	    LEFT JOIN EMPLOYEE EM ON DI.EmployeeId = EM.ID
+	    LEFT JOIN LOGIN_USER LU ON (LU.RoleId = DI.ID AND LU.RoleType = 'DSP')
+	    WHERE 1=1
+	    <isGreaterThan property="id" compareValue="0">
+	    	AND DI.ID=#id#
+	    </isGreaterThan>
+	    <isNotEmpty property="company">
+	    	AND DI.Company like concat('%',#company#,'%')
+	    </isNotEmpty>
+	    <isNotEmpty property="name">
+	    	AND DI.Name like concat('%',#name#,'%')
+	    </isNotEmpty>
+	    <isGreaterThan property="employeeId" compareValue="0">
+	    	AND DI.EmployeeId=#employeeId#
+	    </isGreaterThan>
+	    <isGreaterThan property="countryId" compareValue="0">
+	    	AND DI.CountryIds LIKE concat('%,',#countryId#,',%')
+	    </isGreaterThan>
+	    ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+	</select>
+	<select id="getDspListCount" resultClass="int">
+	    SELECT COUNT(DI.ID)
+	    FROM DSP_INFO DI
+	    WHERE 1=1 
+	    <isGreaterThan property="id" compareValue="0">
+	    	AND DI.ID=#id#
+	    </isGreaterThan>
+	    <isNotEmpty property="company">
+	    	AND DI.Company like concat('%',#company#,'%')
+	    </isNotEmpty>
+	    <isNotEmpty property="name">
+	    	AND DI.Name like concat('%',#name#,'%')
+	    </isNotEmpty>
+	    <isGreaterThan property="employeeId" compareValue="0">
+	    	AND DI.EmployeeId=#employeeId#
+	    </isGreaterThan>
+	    <isGreaterThan property="countryId" compareValue="0">
+	    	AND DI.CountryIds LIKE concat('%,',#countryId#,',%')
+	    </isGreaterThan>
+	</select>
+	
+	<select id="selectIdName" parameterClass="dspVO" resultClass="dspVO">
+		SELECT DI.ID id,
+	    	   DI.Name name
+	   	FROM DSP_INFO DI
+	   	WHERE 1=1
+	   	<isGreaterThan property="id" compareValue="0">
+	   		AND DI.ID = #id#
+	   	</isGreaterThan>
+	   	<isNotEmpty property="name">
+	    	AND DI.Name like concat('%',#name#,'%')
+	    </isNotEmpty>
+	    <isGreaterThan property="employeeId" compareValue="0">
+	    	AND DI.EmployeeId=#employeeId#
+	    </isGreaterThan>
+	</select>
+	
+	<select id="selectDspById" parameterClass="dspVO" resultClass="dspVO">
+		SELECT DI.ID id,
+	    	   DI.Name name,
+	    	   DI.Company company,
+	    	   DI.PriceMethod priceMethod,
+	    	   DI.EmployeeId employeeId,
+	    	   DI.AdType adType,
+	    	   DI.Size size,
+	    	   DI.CountryIds countryIds,
+	    	   DI.CreateTime createTime,
+	    	   DI.Status status,
+	    	   LU.Email email,
+	    	   LU.Password password
+	    FROM DSP_INFO DI
+	    LEFT JOIN LOGIN_USER LU ON LU.RoleId = DI.ID
+	    WHERE DI.ID = #id# AND LU.RoleType='DSP'
+	</select>
+	
+	<insert id="insertDspVO" parameterClass="dspVO">
+		INSERT  INTO  DSP_INFO
+		( Name,Company ,PriceMethod,EmployeeId,CountryIds,AdType,Size,SeatInfo,CreateTime)
+ 		VALUES (#name#,#company#,#priceMethod#,#employeeId#,#countryIds#,#adType#,#size#,#seatInfo#,now())
+ 		<selectKey resultClass="int"  keyProperty="id" >   
+        select @@IDENTITY as value      
+		</selectKey> 											
+	</insert>
+	
+	<insert id="insertDspVOUser" parameterClass="dspVO">
+		INSERT  INTO  LOGIN_USER
+		( Email ,Password,RoleId,RoleType,Status,CreateTime)
+ 		VALUES (#email#,#password#,#id#,'DSP',1,now())
+	</insert>
+	
+	<update id="updateDspVO" parameterClass="dspVO">
+		UPDATE DSP_INFO  SET
+			Name = #name#,
+			Company = #company#,
+			PriceMethod = #priceMethod#,
+			EmployeeId = #employeeId#,
+			CountryIds = #countryIds#,
+			AdType = #adType#,
+			Size = #size#,
+			SeatInfo = #seatInfo#
+		WHERE ID = #id#
+	</update>
+	
+	<update id="updateDspStatus" parameterClass="dspVO">
+		UPDATE DSP_INFO  SET
+			Status = #status#
+		WHERE ID = #id#
+	</update>
+	<update id="updateDspVOUser" parameterClass="dspVO">
+		UPDATE LOGIN_USER  SET 
+	                 Password=#password#     
+	        WHERE RoleId = #id# AND RoleType="DSP"
+	</update>
+	
+</sqlMap>

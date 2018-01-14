@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="agentSqlMap">
+
+<!--     <select id="getLoginUser" parameterClass="loginUser" resultClass="loginUser"> -->
+<!--         SELECT *  -->
+<!--         FROM LOGIN_USER -->
+<!--         WHERE Email =#email# AND Password = #password# -->
+<!--     </select> -->
+    
+    <insert id="createAgent" parameterClass="agentVO">
+        INSERT INTO PROXY(Name,`Desc`,`Key`)
+        VALUES(#name#,#desc#,#key#)
+        <selectKey resultClass="int"  keyProperty="id" >    
+             SELECT last_insert_id() as id ;   
+        </selectKey>            
+    </insert>
+    
+    <!-- 插入login_user表 -->
+     <insert id="createloginUser" parameterClass="agentVO" >
+        INSERT INTO LOGIN_USER(Email,Password,RoleId,CreateTime,Status,RoleType)
+        VALUES(#email#,#password#,#id#,now(),0,'PY')
+     </insert>
+    
+	<update id="updateLoginUser" parameterClass="agentVO">
+	        UPDATE LOGIN_USER
+	        SET <isNotEmpty  property="status">    
+	                 Status=#status#
+	             </isNotEmpty>
+	             <isNotEmpty prepend="," property="password">    
+	                 Password=#password#     
+	             </isNotEmpty>
+	             <isNotEmpty prepend="," property="email">
+	                 Email=#email#   
+	             </isNotEmpty>
+	        WHERE RoleId = #id# AND RoleType="PY"
+	</update>
+	
+	<update id="updateAgent" parameterClass="agentVO">
+	        UPDATE PROXY
+	        SET <isNotEmpty property="name">
+	                Name=#name#
+	            </isNotEmpty>
+	            <isNotEmpty prepend="," property="desc">
+	                `Desc`=#desc#
+	            </isNotEmpty>
+	        WHERE id=#id#
+	</update>
+	<select id="getAllAgentIdName" parameterClass="agentVO" resultClass="agentVO">
+		SELECT P.ID id,
+			P.Name name
+		FROM PROXY P
+		<isGreaterThan property="id" compareValue="0">
+	       P.Id = #id#
+	    </isGreaterThan>
+	    <isNotEmpty property="name">
+           P.Name LIKE concat('%',#name#,'%')	    
+	    </isNotEmpty>
+	</select>
+	<select id="getAgentVOList" parameterClass="agentVO" resultClass="agentVO">
+	   SELECT   P.Id,P.`Name`,L.Email,
+	            CASE L.`Status`
+	            WHEN '0' THEN 'Pending'
+	            WHEN '1' THEN 'Approve'
+	            WHEN '2' THEN 'Deny'
+	            WHEN '3' THEN 'Block'
+	            END statusName,
+	            L.CreateTime ,
+	            L.`Status` status
+	    FROM PROXY P
+	    LEFT JOIN LOGIN_USER AS L ON P.ID=L.RoleId
+	    WHERE L.RoleType='PY'
+	    <isGreaterThan prepend="AND" property="id" compareValue="0">
+	       P.Id = #id#
+	    </isGreaterThan>
+	    <isNotEmpty prepend="AND" property="name">
+           P.Name LIKE '%$name$%'	    
+	    </isNotEmpty>
+	    <isNotEmpty prepend="AND" property="email">
+           L.Email LIKE '%$email$%'      
+        </isNotEmpty>
+        <isGreaterThan prepend="AND" property="status" compareValue="-1">
+           L.Status = #status#
+        </isGreaterThan>
+	    ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+	</select>
+	
+	<!-- dataBle查总数 -->
+	<select id="getAgentVOListCount" parameterClass="agentVO" resultClass="int">
+	    SELECT COUNT(D.Id) count
+	    FROM(
+	        SELECT   P.Id Id
+	      FROM PROXY P
+	      LEFT JOIN LOGIN_USER AS L ON P.ID=L.RoleId
+	      WHERE L.RoleType='PY'
+		  <isGreaterThan prepend="AND" property="id" compareValue="0">
+		      P.Id = #id#
+		  </isGreaterThan>
+		  <isNotEmpty prepend="AND" property="name">
+		      P.Name LIKE '%$name$%'      
+		  </isNotEmpty>
+		  <isNotEmpty prepend="AND" property="email">
+		      L.Email LIKE '%$email$%'      
+		  </isNotEmpty>
+		  <isGreaterThan prepend="AND" property="status" compareValue="-1">
+		      L.Status = #status#
+		  </isGreaterThan>
+	    )D
+	</select>
+	
+	<select id="getAgentVO" parameterClass="agentVO" resultClass="agentVO">
+        SELECT P.Id, P.name, P.desc, L.email, L.password, L.roleType, L.status,
+            CASE L.status
+            WHEN '0' THEN 'Pending'
+            WHEN '1' THEN 'Approve'
+            WHEN '2' THEN 'Deny'
+            WHEN '3' THEN 'Block'
+            END statusName,
+            L.createTime,
+            P.Key `key`
+        FROM  PROXY P
+        LEFT  JOIN LOGIN_USER AS L ON P.ID=L.RoleId
+        WHERE L.RoleType='PY' and P.ID=$id$
+    </select>
+    
+    <update id="updateAgentStatus" parameterClass="agentVO">
+        UPDATE LOGIN_USER
+        SET Status = #status#
+        WHERE RoleId = #id# AND RoleType="PY"
+    </update>
+    
+</sqlMap>

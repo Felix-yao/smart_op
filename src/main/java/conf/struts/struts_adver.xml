@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.multipart.maxSize" value="1000000000" />
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.custom.i18n.resources" value="globalMessages" />
+	
+	<package name="adver" namespace="/adver" extends="struts-default">
+	
+		<interceptors>
+		 	<interceptor name="auth" class="com.kkgame.adx.base.AuthorizationInterceptor"></interceptor>
+			<interceptor-stack name="crudStack">
+				<interceptor-ref name="auth"/>
+				<interceptor-ref name="defaultStack" />				 
+			</interceptor-stack>
+		</interceptors>
+		
+		<action name="query" class="com.kkgame.adx.adver.action.AdverAction" method="query">
+			<result name="query">/pages/adver/adverList.jsp</result>
+		</action>
+		<action name="create" class="com.kkgame.adx.adver.action.AdverAction" method="create">
+			<result name="create">/pages/adver/create.jsp</result>
+		</action>
+		<action name="update" class="com.kkgame.adx.adver.action.AdverAction" method="update">
+			<result name="udpate">/pages/adver/create.jsp</result>
+		</action>
+		<action name="save" class="com.kkgame.adx.adver.action.AdverAction" method="save">
+		</action>
+		<action name="pageList" class="com.kkgame.adx.adver.action.AdverAction" method="pageList">
+		</action>
+		<action name="updateStatus" class="com.kkgame.adx.adver.action.AdverAction" method="updateStatus">
+		</action>
+		
+    </package>
+</struts>

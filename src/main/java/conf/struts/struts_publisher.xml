@@ -1,0 +1,37 @@
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.multipart.maxSize" value="1000000000" />
+	<include file="struts-default.xml"></include>
+	
+	<package name="publisher" namespace="/publisher" extends="abroad-default">
+		<default-interceptor-ref name="crudStack"/>
+		
+		<action name="agent" class="com.kkgame.adx.publisher.action.AgentAction">
+            <result name="agentCreatePage">/pages/publisher/agentSave.jsp</result>
+            <result name="agentListPage">/pages/publisher/agentList.jsp</result>
+            <result name="agentUpdatePage">/pages/publisher/agentSave.jsp</result>
+        </action>
+        
+        <action name="publisher" class="com.kkgame.adx.publisher.action.PublisherAction">
+            <result name="publisherCreatePage">/pages/publisher/publisherSave.jsp</result>
+            <result name="publisherListPage">/pages/publisher/publisherList.jsp</result>
+            <result name="publisherUpdatePage">/pages/publisher/publisherSave.jsp</result>
+        </action>
+        
+        <action name="app" class="com.kkgame.adx.publisher.action.AppAction">
+            <result name="appCreatePage">/pages/publisher/appSave.jsp</result>
+            <result name="appListPage">/pages/publisher/appList.jsp</result>
+            <result name="appUpdatePage">/pages/publisher/appSave.jsp</result>
+            <result name="success">/pages/publisher/adPositionSave.jsp</result>
+        </action>
+        
+        <action name="adPosition" class="com.kkgame.adx.publisher.action.ADPositionAction">
+            <result name="adPositionCreatePage">/pages/publisher/adPositionSave.jsp</result>
+            <result name="adPositionListPage">/pages/publisher/adPositionList.jsp</result>
+            <result name="adPositionUpdatePage">/pages/publisher/adPositionSave.jsp</result>
+        </action>
+		
+	</package>
+</struts>

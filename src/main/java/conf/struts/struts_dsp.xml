@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.multipart.maxSize" value="1000000000" />
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.custom.i18n.resources" value="globalMessages" />
+	
+	<package name="dsp" namespace="/dsp" extends="struts-default">
+	
+		<interceptors>
+		 	<interceptor name="auth" class="com.kkgame.adx.base.AuthorizationInterceptor"></interceptor>
+			<interceptor-stack name="crudStack">
+				<interceptor-ref name="auth"/>
+				<interceptor-ref name="defaultStack" />				 
+			</interceptor-stack>
+		</interceptors>
+		
+		<action name="query" class="com.kkgame.adx.dsp.action.DspAction" method="query">
+			<result name="query">/pages/dsp/dspList.jsp</result>
+		</action>
+		<action name="create" class="com.kkgame.adx.dsp.action.DspAction" method="create">
+			<result name="create">/pages/dsp/create.jsp</result>
+		</action>
+		<action name="update" class="com.kkgame.adx.dsp.action.DspAction" method="update">
+			<result name="udpate">/pages/dsp/create.jsp</result>
+		</action>
+		<action name="save" class="com.kkgame.adx.dsp.action.DspAction" method="save">
+		</action>
+		<action name="pageList" class="com.kkgame.adx.dsp.action.DspAction" method="pageList">
+		</action>
+		<action name="updateStatus" class="com.kkgame.adx.dsp.action.DspAction" method="updateStatus">
+		</action>
+		<action name="updateDspUserStatus" class="com.kkgame.adx.dsp.action.DspAction" method="updateDspUserStatus">
+		</action>
+		
+    </package>
+</struts>

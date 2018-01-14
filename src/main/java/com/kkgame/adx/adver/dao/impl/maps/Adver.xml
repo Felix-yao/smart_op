@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="adverSqlMap">
+	<select id="selectAll" resultClass="adverVO">
+	    SELECT AD.ID id,
+	    	AD.Name name,
+	    	AD.Phone phone,
+	    	AD.Company company,
+	    	AD.QQ qq,
+	    	LU.Email email,
+	    	C.Name country,
+	    	CASE LU.Status
+	    	WHEN '0' THEN 'Pending'
+	        WHEN '1' THEN 'Approve'
+	        WHEN '2' THEN 'Deny'
+	        WHEN '3' THEN 'Block'
+	        END statu,
+	        EM.Name amName,
+	        LU.Status status
+	    FROM ADVERTISER AD
+	    LEFT JOIN LOGIN_USER LU ON LU.RoleId = AD.ID
+	    LEFT JOIN COUNTRY C ON C.ID = AD.CountryId
+	    LEFT JOIN EMPLOYEE EM ON EM.ID = AD.AmId
+	    WHERE LU.RoleType = 'AD' 
+	    <isGreaterThan property="id" compareValue="0">
+	    	AND AD.ID=#id#
+	    </isGreaterThan>
+	    <isNotEmpty property="name">
+	    	AND AD.Name like concat('%',#name#,'%')
+	    </isNotEmpty>
+	    <isNotEmpty property="email">
+	    	AND LU.Email like concat('%',#email#,'%')
+	    </isNotEmpty>
+	    <isGreaterThan property="amId" compareValue="0">
+	    	AND AD.AmId=#amId#
+	    </isGreaterThan>
+	    <isGreaterThan property="status" compareValue="-1">
+	    	AND LU.Status=#status#
+	    </isGreaterThan>
+	    ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+	</select>
+	<select id="getAdverListCount" resultClass="int">
+	    SELECT COUNT(AD.ID)
+	    FROM ADVERTISER AD
+	    LEFT JOIN LOGIN_USER LU ON LU.RoleId = AD.ID
+	    WHERE LU.RoleType = 'AD' 
+	    <isGreaterThan property="id" compareValue="0">
+	    	AND AD.ID=#id#
+	    </isGreaterThan>
+	    <isNotEmpty property="name">
+	    	AND AD.Name like concat('%',#name#,'%')
+	    </isNotEmpty>
+	    <isNotEmpty property="email">
+	    	AND LU.Email like concat('%',#email#,'%')
+	    </isNotEmpty>
+	    <isGreaterThan property="amId" compareValue="0">
+	    	AND AD.AmId=#amId#
+	    </isGreaterThan>
+	    <isGreaterThan property="status" compareValue="-1">
+	    	AND LU.Status=#status#
+	    </isGreaterThan>
+	</select>
+	<select id="selectAdverById" parameterClass="adverVO" resultClass="adverVO">
+		SELECT *,LU.Email email,LU.Password password 
+		FROM ADVERTISER AD
+		LEFT JOIN LOGIN_USER LU ON LU.RoleId = AD.ID
+		WHERE AD.ID=#id#
+	</select>
+	<insert id="insertAdver" parameterClass="adverVO">
+		INSERT INTO ADVERTISER 
+			( AmId ,IsCpa,Phone,Company,Street,City,State,Zip,Skype,QQ,CountryId,Desc)
+ 		VALUES (#amId#,#isCpa#,#phone#,#company#,#street#,#city#,#state#,#zip#,#skype#,#qq#,#countryId#,#desc#)
+		<selectKey resultClass="int"  keyProperty="id" >   
+        select @@IDENTITY as value      
+		</selectKey>
+	</insert>
+	<insert id="createAdverUser" parameterClass="adverVO">
+		INSERT INTO LOGIN_USER 
+			( Email ,Password,RoleId,RoleType,Status,CreateTime)
+ 		VALUES (#email#,#password#,#id#,'AD',0,now())
+	</insert>
+	<update id="updateAdver" parameterClass="adverVO">
+		UPDATE ADVERTISER AD SET
+			AD.AmId=#amId#,
+			AD.Name=#name#,
+			AD.IsCpa =#isCpa#,
+			AD.Phone =#phone#,
+			AD.Company =#company#,
+			AD.Street =#street#,
+			AD.City =#city#,
+			AD.State =#state#,
+			AD.Zip =#zip#,
+			AD.Skype =#skype#,
+			AD.QQ =#qq#,
+			AD.CountryId =#countryId#,
+			AD.`Desc` =#desc#
+			WHERE AD.ID = #id#
+	</update>
+	<update id="updateAdverUser" parameterClass="adverVO">
+	        UPDATE LOGIN_USER SET 
+	        	<isNotEmpty  property="status">    
+	                 Status=#status#
+	             </isNotEmpty>
+	             <isNotEmpty prepend="," property="password">    
+	                 Password=#password#     
+	             </isNotEmpty>
+	             <isNotEmpty prepend="," property="email">
+	                 Email=#email#   
+	             </isNotEmpty>
+	        WHERE RoleId = #id# AND RoleType="AD"
+	</update>
+	<update id="updateAdverStatus" parameterClass="adverVO">
+		UPDATE LOGIN_USER
+        SET Status = #status#
+        WHERE RoleId = #id# AND RoleType="AD"
+	</update>
+</sqlMap>

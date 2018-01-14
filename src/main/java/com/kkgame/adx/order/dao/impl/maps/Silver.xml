@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="silverSqlMap">
+
+    <select id="listSilveVO" parameterClass="silverVO" resultClass="silverVO">
+        SELECT Id,	Name,	mobile,	province,	city,	area,	address,	price,	remark,	color,
+				<!-- CASE Status WHEN 0 THEN '待发货' WHEN 1 THEN '已发货' WHEN 2 THEN '已取消' END statusName, -->
+				Status,	DATE(createTime) createTime
+		FROM smart_watch_info
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="startDate">
+				DATE(CreateTime) BETWEEN #startDate# AND #endDate#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY #pageVO.orderIndex#
+	    <isEqual property="pageVO.orderType" compareValue="desc"> DESC</isEqual>
+	    <![CDATA[ LIMIT  #pageVO.startIndex#, #pageVO.pageSize# ]]>
+    </select>
+    
+    <select id="listSilveVOCount" parameterClass="silverVO" resultClass="int">
+        SELECT COUNT(Id) count
+		FROM smart_watch_info
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="AND" property="startDate">
+				DATE(CreateTime) BETWEEN #startDate# AND #endDate#
+			</isNotEmpty>
+		</dynamic>
+    </select>
+    
+    <update id="updateLogisticsNumber" parameterClass="silverVO">
+    	UPDATE smart_watch_info
+    	SET LogisticsNumber = #logisticsNumber# ,Status = 1
+    	WHERE Id = #id#
+    </update>
+    
+    <update id="updateStatus" parameterClass="silverVO">
+    	UPDATE smart_watch_info
+    	SET Status = #status#
+    	WHERE Id = #id#
+    </update>
+    
+    <select id="getSilverVO" parameterClass="silverVO" resultClass="silverVO">
+    	SELECT *
+		FROM smart_watch_info
+		WHERE Id = #id#
+    </select>
+    
+</sqlMap>

@@ -1,0 +1,17 @@
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <constant name="struts.enable.DynamicMethodInvocation" value="true" />
+    
+    <include file="conf/struts/struts_base.xml" />
+    <include file="conf/struts/struts_dsp.xml" />
+	<include file="conf/struts/struts_publisher.xml"/>
+	<include file="conf/struts/struts_adver.xml"/>
+	
+	<include file="conf/struts/struts_system.xml"/>
+	<include file="conf/struts/struts_employee.xml"/>
+	<include file="conf/struts/struts_data.xml"/>
+	<include file="conf/struts/struts_order.xml"/>
+	
+</struts>
